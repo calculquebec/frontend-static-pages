@@ -1,6 +1,6 @@
 import { EnvironmentTypes, SiteConfig, footerApp, headerApp, shellApp } from '@openedx/frontend-base';
 
-import { templateApp } from './src';
+import { staticPagesApp } from './src';
 
 import '@openedx/frontend-base/shell/style';
 
@@ -17,7 +17,7 @@ const siteConfig: SiteConfig = {
     shellApp,
     headerApp,
     footerApp,
-    templateApp,
+    staticPagesApp,
   ],
 
   accessTokenCookieName: 'edx-jwt-cookie-header-payload',
