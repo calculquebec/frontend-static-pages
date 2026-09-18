@@ -11,7 +11,7 @@ const app: App = {
       op: WidgetOperationTypes.APPEND,
       element: (
         <LinkMenuItem
-          label="Example Menu"
+          label="FAQ"
           role={templateRole}
           variant="navLink"
         />

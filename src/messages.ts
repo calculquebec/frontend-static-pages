@@ -11,6 +11,11 @@ const messages = defineMessages({
     defaultMessage: 'FAQ | {siteName}',
     description: 'Document title for the FAQ page',
   },
+  'ans.page.title': {
+    id: 'ans.page.title',
+    defaultMessage: 'Accord de niveau de service (ANS) | {siteName}',
+    description: 'Document title for the ANS page',
+  },
 });
 
 export default messages;
