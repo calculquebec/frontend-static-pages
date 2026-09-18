@@ -1,0 +1,304 @@
+.ans-page {
+  scroll-behavior: smooth;
+
+  .ans-page-wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.5rem 1rem 4rem 1rem;
+  }
+
+  /* Header card */
+  .ans-header-card {
+    background: linear-gradient(135deg, #052147 0%, #0d386c 100%);
+    color: #ffffff;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(5, 33, 71, 0.15);
+
+    .ans-header-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .ans-title {
+      color: #ffffff;
+      font-size: 2.35rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .ans-subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.4rem;
+      font-weight: 400;
+      margin: 0 0 1rem 0;
+    }
+
+    .ans-meta-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+      .ans-version-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0.3rem 0.75rem;
+        border-radius: 6px;
+      }
+    }
+  }
+
+  /* Table of contents card */
+  .ans-toc-card {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    .ans-toc-title {
+      color: #052147;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ans-toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.65rem 1.5rem;
+
+      li {
+        a {
+          color: #0052cc;
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 0.975rem;
+          display: inline-flex;
+          align-items: center;
+          padding: 0.3rem 0.5rem;
+          border-radius: 6px;
+          transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+
+          &:hover {
+            color: #0747a6;
+            background-color: #ebf3ff;
+            text-decoration: none;
+            transform: translateX(4px);
+          }
+        }
+      }
+    }
+  }
+
+  /* Section cards */
+  .ans-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .ans-section {
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 5px 16px rgba(0, 0, 0, 0.08);
+      border-color: #dee2e6;
+    }
+
+    .ans-section-heading {
+      color: #052147;
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #eef2f7;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      scroll-margin-top: 2rem;
+    }
+
+    p {
+      color: #2b3a4a;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 1.25rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    a {
+      color: #0052cc;
+      text-decoration: underline;
+      font-weight: 500;
+      transition: color 0.15s ease;
+
+      &:hover {
+        color: #0747a6;
+        text-decoration: underline;
+      }
+    }
+
+    .ans-footnote {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px dashed #cbd5e1;
+      font-size: 0.9rem;
+      color: #64748b;
+
+      a {
+        font-size: 0.9rem;
+        word-break: break-all;
+      }
+    }
+
+    /* Beta notice box */
+    .ans-beta-notice {
+      background-color: #fff8e6;
+      border-left: 4px solid #e09f00;
+      border-radius: 0 8px 8px 0;
+      padding: 1.25rem 1.5rem;
+      margin-top: 0.5rem;
+
+      .ans-beta-badge {
+        display: inline-block;
+        background-color: #fef0cd;
+        color: #855900;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.2rem 0.55rem;
+        border-radius: 4px;
+        margin-bottom: 0.6rem;
+      }
+
+      p {
+        color: #5c4100;
+        margin: 0;
+        font-weight: 500;
+      }
+    }
+  }
+
+  /* Document Footer */
+  .ans-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.925rem;
+    color: #64748b;
+
+    .ans-footer-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .ans-back-to-top {
+      color: #0052cc;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      background-color: #f1f5f9;
+      transition: background-color 0.15s ease, color 0.15s ease;
+
+      &:hover {
+        background-color: #e2e8f0;
+        color: #0747a6;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .ans-page {
+    .ans-page-wrapper {
+      padding: 1.5rem 1rem 3rem 1rem;
+    }
+
+    .ans-header-card {
+      padding: 1.75rem 1.25rem;
+
+      .ans-title {
+        font-size: 1.75rem;
+      }
+
+      .ans-subtitle {
+        font-size: 1.15rem;
+      }
+    }
+
+    .ans-toc-card {
+      padding: 1.25rem 1.25rem;
+
+      .ans-toc-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ans-section {
+      padding: 1.5rem 1.25rem;
+
+      .ans-section-heading {
+        font-size: 1.25rem;
+      }
+
+      p {
+        font-size: 0.975rem;
+      }
+    }
+
+    .ans-footer {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}
