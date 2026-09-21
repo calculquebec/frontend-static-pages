@@ -182,7 +182,7 @@ const messages = defineMessages({
   },
   'ans.footer.meta': {
     id: 'ans.footer.meta',
-    defaultMessage: 'version 1.0 · 7 mai 2025',
+    defaultMessage: 'version 1.0 · 15 septembre 2026',
     description: 'Note de bas de page de version',
   },
 });
