@@ -93,7 +93,7 @@ const ANSPage = () => {
     setSubmitting(true);
 
     const lmsBaseUrl = siteConfig.lmsBaseUrl || '';
-    const targetNext = nextUrl || '/learner-dashboard';
+    const targetNext = nextUrl && nextUrl !== '/dashboard' ? nextUrl : '/learner-dashboard';
     const acceptEndpoint = `${lmsBaseUrl}/sla/accept/`;
 
     try {
