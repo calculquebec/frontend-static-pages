@@ -93,7 +93,7 @@ const ANSPage = () => {
     setSubmitting(true);
 
     const lmsBaseUrl = siteConfig.lmsBaseUrl || '';
-    const targetNext = nextUrl || '/dashboard';
+    const targetNext = nextUrl || '/learner-dashboard';
     const acceptEndpoint = `${lmsBaseUrl}/sla/accept/`;
 
     try {
@@ -340,6 +340,7 @@ const ANSPage = () => {
                   </Alert>
                 )}
 
+		{hasAcceptedAlready || (
                 <form onSubmit={handleSubmit} className="ans-acceptance-form">
                   <label className="ans-acceptance-checkbox-label">
                     <input
@@ -383,6 +384,7 @@ const ANSPage = () => {
                     </Button>
                   </div>
                 </form>
+		)}
               </div>
             </section>
           )}
