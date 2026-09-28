@@ -1,4 +1,6 @@
-import { Container } from '@openedx/paragon';
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Container, Button, Alert, Spinner } from '@openedx/paragon';
 import { getSiteConfig, useIntl } from '@openedx/frontend-base';
 import { Helmet } from 'react-helmet';
 import messages from './messages';
@@ -7,8 +9,69 @@ import './ANSPage.scss';
 
 const ANSPage = () => {
   const { formatMessage } = useIntl();
+  const location = useLocation();
   const siteConfig = getSiteConfig?.() ?? { siteName: 'Calcul Québec' };
   const siteName = siteConfig.siteName || 'Calcul Québec';
+
+  const searchParams = new URLSearchParams(location.search);
+  const nextUrl = searchParams.get('next') || '';
+  const isPromptedToAccept = Boolean(nextUrl || searchParams.has('require_acceptance'));
+
+  const [accepted, setAccepted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    if (!accepted) {
+      setValidationError(formatMessage(messages['ans.accept.error.required']));
+      return;
+    }
+    setValidationError(null);
+    setError(null);
+    setSubmitting(true);
+
+    const lmsBaseUrl = siteConfig.lmsBaseUrl || '';
+    const targetNext = nextUrl || '/dashboard';
+    const acceptEndpoint = `${lmsBaseUrl}/sla/accept/`;
+
+    try {
+      const getCookie = (name: string) => {
+        const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+        return match ? decodeURIComponent(match[3]) : '';
+      };
+
+      const csrfToken = getCookie('csrftoken') || getCookie('edx-csrf-cookie');
+
+      const response = await fetch(acceptEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          accepted: true,
+          next: targetNext,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json().catch(() => ({}));
+        window.location.href = data.redirect_url || targetNext;
+      } else {
+        setError(formatMessage(messages['ans.accept.error.general']));
+        setSubmitting(false);
+      }
+    } catch (err) {
+      setError(formatMessage(messages['ans.accept.error.general']));
+      setSubmitting(false);
+    }
+  };
 
   return (
     <main className="ans-page" id="top">
@@ -34,6 +97,20 @@ const ANSPage = () => {
             </span>
           </div>
         </header>
+
+        {isPromptedToAccept && (
+          <div className="ans-acceptance-banner" role="alert">
+            <div className="ans-acceptance-banner-content">
+              <span className="ans-acceptance-banner-icon" aria-hidden="true">⚠️</span>
+              <p className="ans-acceptance-banner-text">
+                {formatMessage(messages['ans.accept.banner.text'])}
+              </p>
+            </div>
+            <a href="#accept-sla" className="ans-acceptance-banner-btn">
+              {formatMessage(messages['ans.accept.banner.button'])}
+            </a>
+          </div>
+        )}
 
         <nav className="ans-toc-card" aria-label={formatMessage(messages['ans.toc.title'])}>
           <h2 className="ans-toc-title">
@@ -165,6 +242,76 @@ const ANSPage = () => {
               {formatMessage(messages['ans.section6.p1'])}
             </p>
           </section>
+
+          {/* Section d'acceptation de l'ANS */}
+          {isPromptedToAccept && (
+            <section id="accept-sla" className="ans-acceptance-section">
+              <div className="ans-acceptance-card">
+                <h2 className="ans-acceptance-title">
+                  {formatMessage(messages['ans.accept.card.title'])}
+                </h2>
+                <p className="ans-acceptance-text">
+                  {formatMessage(messages['ans.accept.card.text'])}
+                </p>
+
+                {error && (
+                  <Alert variant="danger" className="ans-acceptance-error">
+                    {error}
+                  </Alert>
+                )}
+
+                {validationError && (
+                  <Alert variant="warning" className="ans-acceptance-error">
+                    {validationError}
+                  </Alert>
+                )}
+
+                <form onSubmit={handleSubmit} className="ans-acceptance-form">
+                  <label className="ans-acceptance-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={accepted}
+                      onChange={(e) => {
+                        setAccepted(e.target.checked);
+                        if (e.target.checked) {
+                          setValidationError(null);
+                        }
+                      }}
+                      disabled={submitting}
+                      className="ans-acceptance-checkbox"
+                    />
+                    <span className="ans-acceptance-checkbox-text">
+                      {formatMessage(messages['ans.accept.checkbox.label'])}
+                    </span>
+                  </label>
+
+                  <div className="ans-acceptance-actions">
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={submitting}
+                      className="ans-acceptance-submit-btn"
+                    >
+                      {submitting ? (
+                        <>
+                          <Spinner
+                            animation="border"
+                            size="sm"
+                            className="mr-2"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                          {formatMessage(messages['ans.accept.button.submitting'])}
+                        </>
+                      ) : (
+                        formatMessage(messages['ans.accept.button.submit'])
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </section>
+          )}
         </div>
 
         <footer className="ans-footer">

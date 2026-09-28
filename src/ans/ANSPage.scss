@@ -256,6 +256,156 @@
       }
     }
   }
+
+  /* Acceptance Banner */
+  .ans-acceptance-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: #fff8e1;
+    border-left: 5px solid #f9a825;
+    border-radius: 10px;
+    padding: 1.25rem 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(249, 168, 37, 0.12);
+
+    .ans-acceptance-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      flex: 1 1 300px;
+
+      .ans-acceptance-banner-icon {
+        font-size: 1.6rem;
+        flex-shrink: 0;
+      }
+
+      .ans-acceptance-banner-text {
+        color: #795548;
+        font-weight: 600;
+        font-size: 1.05rem;
+        margin: 0;
+        line-height: 1.4;
+      }
+    }
+
+    .ans-acceptance-banner-btn {
+      display: inline-flex;
+      align-items: center;
+      background: #0052cc;
+      color: #ffffff;
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: background 0.15s ease, transform 0.15s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background: #0747a6;
+        color: #ffffff;
+        text-decoration: none;
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  /* Acceptance Section Card */
+  .ans-acceptance-section {
+    margin-top: 2rem;
+    margin-bottom: 2.5rem;
+
+    .ans-acceptance-card {
+      background: #ffffff;
+      border: 2px solid #0052cc;
+      border-radius: 14px;
+      padding: 2.25rem 2.5rem;
+      box-shadow: 0 8px 28px rgba(0, 82, 204, 0.12);
+
+      .ans-acceptance-title {
+        color: #052147;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 0.75rem;
+      }
+
+      .ans-acceptance-text {
+        color: #475569;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+      }
+
+      .ans-acceptance-error {
+        margin-bottom: 1.25rem;
+        border-radius: 8px;
+      }
+
+      .ans-acceptance-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+
+        .ans-acceptance-checkbox-label {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.75rem;
+          cursor: pointer;
+          user-select: none;
+          margin: 0;
+
+          .ans-acceptance-checkbox {
+            margin-top: 0.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: #0052cc;
+            cursor: pointer;
+            flex-shrink: 0;
+          }
+
+          .ans-acceptance-checkbox-text {
+            color: #1e293b;
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.4;
+          }
+        }
+
+        .ans-acceptance-actions {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+
+          .ans-acceptance-submit-btn {
+            background-color: #0052cc;
+            border-color: #0052cc;
+            font-size: 1.05rem;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 82, 204, 0.25);
+            transition: all 0.15s ease;
+
+            &:hover:not(:disabled) {
+              background-color: #0747a6;
+              border-color: #0747a6;
+              transform: translateY(-1px);
+              box-shadow: 0 6px 16px rgba(0, 82, 204, 0.35);
+            }
+
+            &:disabled {
+              opacity: 0.65;
+              cursor: not-allowed;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: 768px) {

@@ -185,6 +185,53 @@ const messages = defineMessages({
     defaultMessage: 'version 1.0 · 15 septembre 2026',
     description: 'Note de bas de page de version',
   },
+
+  // Section d'acceptation de l'ANS
+  'ans.accept.banner.text': {
+    id: 'ans.accept.banner.text',
+    defaultMessage: "Veuillez lire et accepter l'accord de niveau de service (ANS) pour continuer à utiliser Evolo.",
+    description: "Bannière d'avertissement pour l'acceptation de l'ANS",
+  },
+  'ans.accept.banner.button': {
+    id: 'ans.accept.banner.button',
+    defaultMessage: "Passer à l'acceptation ↓",
+    description: "Bouton pour sauter à la section d'acceptation",
+  },
+  'ans.accept.card.title': {
+    id: 'ans.accept.card.title',
+    defaultMessage: "Acceptation de l'accord de niveau de service",
+    description: "Titre de la section d'acceptation",
+  },
+  'ans.accept.card.text': {
+    id: 'ans.accept.card.text',
+    defaultMessage: "Pour continuer à utiliser la plateforme Evolo, vous devez confirmer que vous avez lu et accepté les conditions de cet accord de niveau de service.",
+    description: "Explication pour l'acceptation de l'ANS",
+  },
+  'ans.accept.checkbox.label': {
+    id: 'ans.accept.checkbox.label',
+    defaultMessage: "J'ai lu et j'accepte l'accord de niveau de service (ANS).",
+    description: "Libellé de la case à cocher pour accepter l'ANS",
+  },
+  'ans.accept.button.submit': {
+    id: 'ans.accept.button.submit',
+    defaultMessage: 'Accepter et continuer',
+    description: "Bouton d'acceptation et de continuation",
+  },
+  'ans.accept.button.submitting': {
+    id: 'ans.accept.button.submitting',
+    defaultMessage: 'Enregistrement en cours...',
+    description: "État de chargement du bouton d'acceptation",
+  },
+  'ans.accept.error.required': {
+    id: 'ans.accept.error.required',
+    defaultMessage: "Vous devez cocher la case pour accepter l'accord avant de continuer.",
+    description: "Message d'erreur si la case n'est pas cochée",
+  },
+  'ans.accept.error.general': {
+    id: 'ans.accept.error.general',
+    defaultMessage: "Une erreur est survenue lors de l'enregistrement de votre acceptation. Veuillez réessayer.",
+    description: "Message d'erreur générique",
+  },
 });
 
 export default messages;
