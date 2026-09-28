@@ -61,6 +61,11 @@ const messages = defineMessages({
     defaultMessage: '6 – Dispositions finales',
     description: 'Entrée sommaire 6',
   },
+  'ans.toc.item7': {
+    id: 'ans.toc.item7',
+    defaultMessage: "7 – Acceptation de l'accord",
+    description: 'Entrée sommaire 7',
+  },
 
   // Section 1: Introduction
   'ans.section1.title': {
@@ -187,14 +192,19 @@ const messages = defineMessages({
   },
 
   // Section d'acceptation de l'ANS
+  'ans.accept.banner.title': {
+    id: 'ans.accept.banner.title',
+    defaultMessage: "Action requise : Acceptation de l'accord de niveau de service (ANS)",
+    description: "Titre de la bannière d'avertissement",
+  },
   'ans.accept.banner.text': {
     id: 'ans.accept.banner.text',
-    defaultMessage: "Veuillez lire et accepter l'accord de niveau de service (ANS) pour continuer à utiliser Evolo.",
+    defaultMessage: "Pour continuer à utiliser la plateforme Evolo, vous devez lire et accepter cet accord. Veuillez faire défiler la page jusqu'au formulaire au bas du document, ou cliquer sur le bouton ci-dessous pour y accéder directement.",
     description: "Bannière d'avertissement pour l'acceptation de l'ANS",
   },
   'ans.accept.banner.button': {
     id: 'ans.accept.banner.button',
-    defaultMessage: "Passer à l'acceptation ↓",
+    defaultMessage: "Aller au formulaire d'acceptation en bas de page ↓",
     description: "Bouton pour sauter à la section d'acceptation",
   },
   'ans.accept.card.title': {
@@ -231,6 +241,11 @@ const messages = defineMessages({
     id: 'ans.accept.error.general',
     defaultMessage: "Une erreur est survenue lors de l'enregistrement de votre acceptation. Veuillez réessayer.",
     description: "Message d'erreur générique",
+  },
+  'ans.accept.status.alreadyAccepted': {
+    id: 'ans.accept.status.alreadyAccepted',
+    defaultMessage: "Vous avez déjà accepté la version en vigueur de cet accord de niveau de service.",
+    description: "Message confirmant que l'accord est déjà accepté",
   },
 });
 

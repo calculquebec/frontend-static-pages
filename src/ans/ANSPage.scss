@@ -263,52 +263,67 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 1rem;
-    background: #fff8e1;
-    border-left: 5px solid #f9a825;
-    border-radius: 10px;
-    padding: 1.25rem 1.75rem;
+    gap: 1.25rem;
+    background: #fffbeb;
+    border-left: 6px solid #d97706;
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
     margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(249, 168, 37, 0.12);
+    box-shadow: 0 4px 16px rgba(217, 119, 6, 0.15);
 
     .ans-acceptance-banner-content {
       display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      flex: 1 1 300px;
+      align-items: flex-start;
+      gap: 1rem;
+      flex: 1 1 340px;
 
       .ans-acceptance-banner-icon {
-        font-size: 1.6rem;
+        font-size: 2rem;
         flex-shrink: 0;
+        margin-top: -2px;
       }
 
-      .ans-acceptance-banner-text {
-        color: #795548;
-        font-weight: 600;
-        font-size: 1.05rem;
-        margin: 0;
-        line-height: 1.4;
+      .ans-acceptance-banner-text-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+
+        .ans-acceptance-banner-title {
+          color: #92400e;
+          font-weight: 700;
+          font-size: 1.15rem;
+        }
+
+        .ans-acceptance-banner-text {
+          color: #78350f;
+          font-weight: 500;
+          font-size: 1rem;
+          margin: 0;
+          line-height: 1.5;
+        }
       }
     }
 
     .ans-acceptance-banner-btn {
       display: inline-flex;
       align-items: center;
-      background: #0052cc;
+      background: #d97706;
       color: #ffffff;
-      padding: 0.6rem 1.25rem;
+      padding: 0.75rem 1.4rem;
       border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.95rem;
+      font-weight: 700;
+      font-size: 1rem;
       text-decoration: none;
-      transition: background 0.15s ease, transform 0.15s ease;
+      transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
       white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
 
       &:hover {
-        background: #0747a6;
+        background: #b45309;
         color: #ffffff;
         text-decoration: none;
         transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
       }
     }
   }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container, Button, Alert, Spinner } from '@openedx/paragon';
 import { getSiteConfig, useIntl } from '@openedx/frontend-base';
@@ -7,20 +7,78 @@ import messages from './messages';
 
 import './ANSPage.scss';
 
+const getNextParam = (locSearch?: string): string => {
+  try {
+    if (locSearch) {
+      const p = new URLSearchParams(locSearch).get('next');
+      if (p) return p;
+    }
+    if (typeof window !== 'undefined' && window.location.search) {
+      const p = new URLSearchParams(window.location.search).get('next');
+      if (p) return p;
+    }
+    if (typeof window !== 'undefined' && window.location.hash && window.location.hash.includes('?')) {
+      const hashQuery = window.location.hash.substring(window.location.hash.indexOf('?'));
+      const p = new URLSearchParams(hashQuery).get('next');
+      if (p) return p;
+    }
+  } catch (e) {
+    // ignore
+  }
+  return '';
+};
+
 const ANSPage = () => {
   const { formatMessage } = useIntl();
   const location = useLocation();
   const siteConfig = getSiteConfig?.() ?? { siteName: 'Calcul Québec' };
   const siteName = siteConfig.siteName || 'Calcul Québec';
 
-  const searchParams = new URLSearchParams(location.search);
-  const nextUrl = searchParams.get('next') || '';
-  const isPromptedToAccept = Boolean(nextUrl || searchParams.has('require_acceptance'));
+  const nextUrl = getNextParam(location?.search);
+
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(Boolean(nextUrl));
+  const [hasAcceptedAlready, setHasAcceptedAlready] = useState(false);
+  const [needsAcceptance, setNeedsAcceptance] = useState(false);
+  const [statusLoaded, setStatusLoaded] = useState(false);
 
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const lmsBaseUrl = siteConfig.lmsBaseUrl || '';
+        const response = await fetch(`${lmsBaseUrl}/sla/accept/`, {
+          headers: { Accept: 'application/json' },
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data) {
+            if (typeof data.is_authenticated === 'boolean') {
+              setIsAuthenticated(data.is_authenticated);
+            }
+            if (typeof data.has_accepted === 'boolean') {
+              setHasAcceptedAlready(data.has_accepted);
+              if (data.is_authenticated && !data.has_accepted) {
+                setNeedsAcceptance(true);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        // ignore
+      } finally {
+        setStatusLoaded(true);
+      }
+    };
+    checkStatus();
+  }, [siteConfig.lmsBaseUrl]);
+
+  const isLoggedIn = Boolean(isAuthenticated || nextUrl);
+  const showTopBanner = Boolean(isLoggedIn && (nextUrl || needsAcceptance));
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) {
@@ -98,13 +156,18 @@ const ANSPage = () => {
           </div>
         </header>
 
-        {isPromptedToAccept && (
+        {showTopBanner && (
           <div className="ans-acceptance-banner" role="alert">
             <div className="ans-acceptance-banner-content">
               <span className="ans-acceptance-banner-icon" aria-hidden="true">⚠️</span>
-              <p className="ans-acceptance-banner-text">
-                {formatMessage(messages['ans.accept.banner.text'])}
-              </p>
+              <div className="ans-acceptance-banner-text-group">
+                <strong className="ans-acceptance-banner-title">
+                  {formatMessage(messages['ans.accept.banner.title'])}
+                </strong>
+                <p className="ans-acceptance-banner-text">
+                  {formatMessage(messages['ans.accept.banner.text'])}
+                </p>
+              </div>
             </div>
             <a href="#accept-sla" className="ans-acceptance-banner-btn">
               {formatMessage(messages['ans.accept.banner.button'])}
@@ -135,6 +198,11 @@ const ANSPage = () => {
             <li>
               <a href="#section-6">{formatMessage(messages['ans.toc.item6'])}</a>
             </li>
+            {isLoggedIn && (
+              <li>
+                <a href="#accept-sla">{formatMessage(messages['ans.toc.item7'])}</a>
+              </li>
+            )}
           </ul>
         </nav>
 
@@ -243,9 +311,9 @@ const ANSPage = () => {
             </p>
           </section>
 
-          {/* Section d'acceptation de l'ANS */}
-          {isPromptedToAccept && (
-            <section id="accept-sla" className="ans-acceptance-section">
+          {/* Section 7: Acceptation de l'ANS (affichée uniquement pour les utilisateurs connectés) */}
+          {isLoggedIn && (
+            <section id="accept-sla" className="ans-section ans-acceptance-section">
               <div className="ans-acceptance-card">
                 <h2 className="ans-acceptance-title">
                   {formatMessage(messages['ans.accept.card.title'])}
@@ -253,6 +321,12 @@ const ANSPage = () => {
                 <p className="ans-acceptance-text">
                   {formatMessage(messages['ans.accept.card.text'])}
                 </p>
+
+                {hasAcceptedAlready && (
+                  <Alert variant="success" className="ans-acceptance-status-alert">
+                    {formatMessage(messages['ans.accept.status.alreadyAccepted'])}
+                  </Alert>
+                )}
 
                 {error && (
                   <Alert variant="danger" className="ans-acceptance-error">
