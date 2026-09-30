@@ -215,6 +215,19 @@ const ANSPage = () => {
             <p>
               {formatMessage(messages['ans.section1.p1'])}
             </p>
+            <div className="ans-footnote">
+              {formatMessage(messages['ans.section1.footnote'], {
+                url: (
+                  <a
+                    href="https://www.calculquebec.ca/conditions-utilisation"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    https://www.calculquebec.ca/conditions-utilisation
+                  </a>
+                ),
+              })}
+            </div>
           </section>
 
           {/* Section 2: Définitions */}
@@ -234,7 +247,6 @@ const ANSPage = () => {
                   </a>
                 ),
               })}
-              <sup>1</sup>
             </p>
             <div className="ans-footnote">
               {formatMessage(messages['ans.section2.footnote'], {
@@ -251,7 +263,7 @@ const ANSPage = () => {
             </div>
           </section>
 
-          {/* Section 3: Conditions d’utilisation spécifiques à Evolo */}
+          {/* Section 3: Conditions d'utilisation spécifiques à Evolo */}
           <section id="section-3" className="ans-section">
             <h2 className="ans-section-heading">
               {formatMessage(messages['ans.section3.title'])}
@@ -288,6 +300,43 @@ const ANSPage = () => {
               <p>
                 {formatMessage(messages['ans.section4.p1'])}
               </p>
+            </div>
+            <p>
+              {formatMessage(messages['ans.section4.intro'])}
+            </p>
+            <ul className="ans-feature-list">
+              <li>{formatMessage(messages['ans.section4.feature1'])}</li>
+              <li>{formatMessage(messages['ans.section4.feature2'])}</li>
+              <li>{formatMessage(messages['ans.section4.feature3'])}</li>
+              <li>{formatMessage(messages['ans.section4.feature4'])}</li>
+              <li>{formatMessage(messages['ans.section4.feature5'])}</li>
+              <li>{formatMessage(messages['ans.section4.feature6'])}</li>
+            </ul>
+            <p>
+              {formatMessage(messages['ans.section4.access'], {
+                siteLink: (
+                  <a
+                    href="https://evolo.calculquebec.cloud"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {formatMessage(messages['ans.section4.siteLinkText'])}
+                  </a>
+                ),
+              })}
+            </p>
+            <div className="ans-footnote">
+              {formatMessage(messages['ans.section4.footnote'], {
+                url: (
+                  <a
+                    href="https://evolo.calculquebec.cloud"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    https://evolo.calculquebec.cloud
+                  </a>
+                ),
+              })}
             </div>
           </section>
 
