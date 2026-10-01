@@ -59,10 +59,10 @@ const ANSPage = () => {
     location = undefined;
   }
 
-  const [lang, setLang] = useState<'en' | 'fr'>(() => getLanguage(location?.pathname));
+  const [lang, setLang] = useState<'en' | 'fr'>(() => getLanguage());
 
   useEffect(() => {
-    setLang(getLanguage(location?.pathname));
+    setLang(getLanguage());
   }, [location?.pathname]);
 
   const formatMessage = (
