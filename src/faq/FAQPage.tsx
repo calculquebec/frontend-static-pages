@@ -1,7 +1,8 @@
+import React, { useState, useEffect, Fragment } from 'react';
 import { Container } from '@openedx/paragon';
-import { getSiteConfig, useIntl } from '@openedx/frontend-base';
+import { getSiteConfig } from '@openedx/frontend-base';
 import { Helmet } from 'react-helmet';
-import messages from './messages';
+import { frMessages, enMessages } from './messages';
 
 import iconePlus from './assets/icone-plus.png';
 import flechesNav from './assets/fleches-navigation.png';
@@ -12,8 +13,89 @@ import discussionIcon from './assets/discussion-icon.png';
 
 import './FAQPage.scss';
 
+type MessageKey = keyof typeof frMessages;
+
+const getLanguage = (): 'en' | 'fr' => {
+  try {
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(?:^|;\s*)openedx-language-preference=([^;]*)/);
+      if (match) {
+        const val = decodeURIComponent(match[1]).toLowerCase();
+        if (val.startsWith('en')) return 'en';
+        if (val.startsWith('fr')) return 'fr';
+      }
+    }
+    if (typeof navigator !== 'undefined') {
+      const browserLang = (navigator.languages?.[0] || navigator.language || '').toLowerCase();
+      if (browserLang.startsWith('en')) return 'en';
+      if (browserLang.startsWith('fr')) return 'fr';
+    }
+  } catch (e) {
+    // ignore
+  }
+  return 'fr';
+};
+
 const FAQPage = () => {
-  const { formatMessage } = useIntl();
+  const [lang, setLang] = useState<'en' | 'fr'>(getLanguage);
+
+  useEffect(() => {
+    setLang(getLanguage());
+  }, []);
+
+  const formatMessage = (
+    keyOrDescriptor: MessageKey | string | { id: string; defaultMessage?: string },
+    values?: Record<string, any>
+  ): any => {
+    const key = typeof keyOrDescriptor === 'string' ? keyOrDescriptor : keyOrDescriptor.id;
+    const dict = lang === 'en' ? enMessages : frMessages;
+    const rawText =
+      dict[key] ??
+      (typeof keyOrDescriptor === 'object' ? keyOrDescriptor.defaultMessage : undefined) ??
+      frMessages[key] ??
+      key;
+
+    const parseTags = (str: string, baseKey: string | number) => {
+      const tagRegex = /(<\/?(?:strong|em)>)/g;
+      if (!tagRegex.test(str)) {
+        return str;
+      }
+      const parts = str.split(/(<\w+>.*?<\/\w+>)/g);
+      return parts.map((part, idx) => {
+        const match = part.match(/^<(\w+)>(.*?)<\/\1>$/);
+        if (match) {
+          const [, tag, content] = match;
+          if (tag === 'strong') return <strong key={`${baseKey}-s-${idx}`}>{content}</strong>;
+          if (tag === 'em') return <em key={`${baseKey}-e-${idx}`}>{content}</em>;
+        }
+        return part;
+      });
+    };
+
+    if (!values || Object.keys(values).length === 0) {
+      return parseTags(rawText, 'raw');
+    }
+
+    const hasReactNode = Object.values(values).some(
+      (v) => typeof v !== 'string' && typeof v !== 'number'
+    );
+
+    if (!hasReactNode) {
+      const substituted = rawText.replace(/\{(\w+)\}/g, (_, placeholder) =>
+        placeholder in values ? String(values[placeholder]) : `{${placeholder}}`
+      );
+      return parseTags(substituted, 'sub');
+    }
+
+    const parts = rawText.split(/\{(\w+)\}/g);
+    return parts.map((part, index) => {
+      if (index % 2 === 1 && part in values) {
+        return <Fragment key={index}>{values[part]}</Fragment>;
+      }
+      return parseTags(part, index);
+    });
+  };
+
   const siteConfig = getSiteConfig?.() ?? { siteName: 'Calcul Québec' };
   const siteName = siteConfig.siteName || 'Calcul Québec';
 
@@ -21,12 +103,12 @@ const FAQPage = () => {
     <main className="faq-page">
       <Helmet>
         <title>
-          {formatMessage(messages['faq.page.title'], { siteName })}
+          {formatMessage('faq.page.title', { siteName })}
         </title>
       </Helmet>
       <Container className="faq-page-wrapper">
         <h1 className="faq-page-title">
-          {formatMessage(messages['faq.heading'])}
+          {formatMessage('faq.heading')}
         </h1>
 
         <div className="faq-list">
@@ -34,11 +116,11 @@ const FAQPage = () => {
           <details className="faq-item">
             <summary className="faq-summary">
               <span className="faq-question-text">
-                {formatMessage(messages['faq.q1.question'])}
+                {formatMessage('faq.q1.question')}
               </span>
               <img
                 src={iconePlus}
-                alt="Ouvrir / Fermer"
+                alt={formatMessage('faq.toggleAlt')}
                 className="faq-toggle-icon"
                 width="32"
                 height="32"
@@ -46,15 +128,17 @@ const FAQPage = () => {
             </summary>
             <div className="faq-content">
               <p>
-                Cliquer sur l&apos;ic&ocirc;ne &laquo; discussion &raquo;{' '}
-                <img
-                  src={discussionIcon}
-                  alt="Icône discussion"
-                  className="faq-inline-icon"
-                  width="27"
-                  height="23"
-                />{' '}
-                du module pour acc&eacute;der au forum de discussion.
+                {formatMessage('faq.q1.answer', {
+                  icon: (
+                    <img
+                      src={discussionIcon}
+                      alt={formatMessage('faq.q1.iconAlt')}
+                      className="faq-inline-icon"
+                      width="27"
+                      height="23"
+                    />
+                  ),
+                })}
               </p>
             </div>
           </details>
@@ -63,62 +147,61 @@ const FAQPage = () => {
           <details className="faq-item">
             <summary className="faq-summary">
               <span className="faq-question-text">
-                {formatMessage(messages['faq.q2.question'])}
+                {formatMessage('faq.q2.question')}
               </span>
               <img
                 src={iconePlus}
-                alt="Ouvrir / Fermer"
+                alt={formatMessage('faq.toggleAlt')}
                 className="faq-toggle-icon"
                 width="32"
                 height="32"
               />
             </summary>
             <div className="faq-content">
-              <p>
-                Cette formation n&eacute;cessite des{' '}
-                <strong>connaissances de base en ligne de commande Linux</strong>.
-              </p>
-              <p>
-                Vous n&apos;&ecirc;tes pas &agrave; l&apos;aise avec la ligne de
-                commande ? Plusieurs ressources sont disponibles :
-              </p>
+              <p>{formatMessage('faq.q2.answer.p1')}</p>
+              <p>{formatMessage('faq.q2.answer.p2')}</p>
               <ul>
                 <li>
-                  Notre atelier en ligne &laquo; Introduction &agrave; la ligne de commande Linux (LNX101) &raquo; (voir notre page{' '}
-                  <a
-                    href="https://calculquebec.eventbrite.ca"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    EventBrite
-                  </a>{' '}
-                  pour les dates)
+                  {formatMessage('faq.q2.answer.resource1', {
+                    eventBriteLink: (
+                      <a
+                        href="https://calculquebec.eventbrite.ca"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        EventBrite
+                      </a>
+                    ),
+                  })}
                 </li>
                 <li>
-                  Le catalogue de nos partenaires via{' '}
-                  <a
-                    href="https://explora.alliancecan.ca/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Explora
-                  </a>
+                  {formatMessage('faq.q2.answer.resource2', {
+                    exploraLink: (
+                      <a
+                        href="https://explora.alliancecan.ca/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Explora
+                      </a>
+                    ),
+                  })}
                 </li>
                 <li>
-                  <a
-                    href="https://swcarpentry.github.io/shell-novice/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <em>The Unix Shell</em>
-                  </a>{' '}
-                  de Software Carpentry (en anglais, &agrave; votre rythme)
+                  {formatMessage('faq.q2.answer.resource3', {
+                    unixShellLink: (
+                      <a
+                        href="https://swcarpentry.github.io/shell-novice/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <em>The Unix Shell</em>
+                      </a>
+                    ),
+                  })}
                 </li>
               </ul>
-              <p>
-                C&ocirc;t&eacute; technique, un <strong>navigateur r&eacute;cent</strong> suffit.
-                Notre plateforme fournit tout le n&eacute;cessaire.
-              </p>
+              <p>{formatMessage('faq.q2.answer.tech')}</p>
             </div>
           </details>
 
@@ -126,11 +209,11 @@ const FAQPage = () => {
           <details className="faq-item">
             <summary className="faq-summary">
               <span className="faq-question-text">
-                {formatMessage(messages['faq.q3.question'])}
+                {formatMessage('faq.q3.question')}
               </span>
               <img
                 src={iconePlus}
-                alt="Ouvrir / Fermer"
+                alt={formatMessage('faq.toggleAlt')}
                 className="faq-toggle-icon"
                 width="32"
                 height="32"
@@ -139,43 +222,40 @@ const FAQPage = () => {
             <div className="faq-content">
               <ul>
                 <li>
-                  Pour <strong>naviguer d&apos;une page &agrave; l&apos;autre</strong> :
-                  cliquez sur les fl&egrave;ches (en haut de la page){' '}
+                  {formatMessage('faq.q3.answer.item1')}
                   <div className="faq-nav-images">
                     <img
                       src={flechesNav}
-                      alt="Flèches de navigation en haut de page"
+                      alt={formatMessage('faq.q3.answer.item1.altArrows')}
                       width="104"
                       height="48"
                     />
-                    <span>ou sur les boutons (en bas de la page)</span>
+                    <span>{formatMessage('faq.q3.answer.item1.or')}</span>
                     <img
                       src={boutonsNav}
-                      alt="Boutons de navigation en bas de page"
+                      alt={formatMessage('faq.q3.answer.item1.altButtons')}
                       width="304"
                       height="69"
                     />
                   </div>
                 </li>
                 <li className="mt-3">
-                  Pour <strong>ouvrir et fermer le plan de formation</strong> :
-                  cliquez sur les boutons symbolisant une liste
+                  {formatMessage('faq.q3.answer.item2')}
                   <div className="faq-media-wrapper">
                     <img
                       src={planOuvertureFermeture}
-                      alt="Animation montrant l'ouverture et fermeture du plan"
+                      alt={formatMessage('faq.q3.answer.item2.alt')}
                       width="350"
                       height="350"
                     />
                   </div>
                 </li>
                 <li className="mt-3">
-                  Pour <strong>naviguer dans le plan de formation</strong> :
-                  cliquez sur les diff&eacute;rentes fl&egrave;ches
+                  {formatMessage('faq.q3.answer.item3')}
                   <div className="faq-media-wrapper">
                     <img
                       src={planFormationFleches}
-                      alt="Animation montrant la navigation dans les flèches du plan"
+                      alt={formatMessage('faq.q3.answer.item3.alt')}
                       width="350"
                       height="350"
                     />
@@ -189,11 +269,11 @@ const FAQPage = () => {
           <details className="faq-item">
             <summary className="faq-summary">
               <span className="faq-question-text">
-                {formatMessage(messages['faq.q4.question'])}
+                {formatMessage('faq.q4.question')}
               </span>
               <img
                 src={iconePlus}
-                alt="Ouvrir / Fermer"
+                alt={formatMessage('faq.toggleAlt')}
                 className="faq-toggle-icon"
                 width="32"
                 height="32"
@@ -201,15 +281,17 @@ const FAQPage = () => {
             </summary>
             <div className="faq-content">
               <p>
-                Notre &eacute;quipe cherche &agrave; r&eacute;soudre ce probl&egrave;me.
-                Des premi&egrave;res explications sont disponibles sur :{' '}
-                <a
-                  href="https://docs.openedx.org/en/latest/educators/references/data/progress_page.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  https://docs.openedx.org/en/latest/educators/references/data/progress_page.html
-                </a>
+                {formatMessage('faq.q4.answer', {
+                  progressUrlLink: (
+                    <a
+                      href="https://docs.openedx.org/en/latest/educators/references/data/progress_page.html"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      https://docs.openedx.org/en/latest/educators/references/data/progress_page.html
+                    </a>
+                  ),
+                })}
               </p>
             </div>
           </details>
