@@ -1,11 +1,34 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container, Button, Alert, Spinner } from '@openedx/paragon';
-import { getSiteConfig, useIntl } from '@openedx/frontend-base';
+import { getSiteConfig } from '@openedx/frontend-base';
 import { Helmet } from 'react-helmet';
-import messages from './messages';
+import { frMessages, enMessages } from './messages';
 
 import './ANSPage.scss';
+
+type MessageKey = keyof typeof frMessages;
+
+const getLanguage = (): 'en' | 'fr' => {
+  try {
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(?:^|;\s*)openedx-language-preference=([^;]*)/);
+      if (match) {
+        const val = decodeURIComponent(match[1]).toLowerCase();
+        if (val.startsWith('en')) return 'en';
+        if (val.startsWith('fr')) return 'fr';
+      }
+    }
+    if (typeof navigator !== 'undefined') {
+      const browserLang = (navigator.languages?.[0] || navigator.language || '').toLowerCase();
+      if (browserLang.startsWith('en')) return 'en';
+      if (browserLang.startsWith('fr')) return 'fr';
+    }
+  } catch (e) {
+    // ignore
+  }
+  return 'fr';
+};
 
 const getNextParam = (locSearch?: string): string => {
   try {
@@ -29,7 +52,47 @@ const getNextParam = (locSearch?: string): string => {
 };
 
 const ANSPage = () => {
-  const { formatMessage } = useIntl();
+  const [lang, setLang] = useState<'en' | 'fr'>(getLanguage);
+
+  useEffect(() => {
+    setLang(getLanguage());
+  }, []);
+
+  const formatMessage = (
+    keyOrDescriptor: MessageKey | string | { id: string; defaultMessage?: string },
+    values?: Record<string, any>
+  ): any => {
+    const key = typeof keyOrDescriptor === 'string' ? keyOrDescriptor : keyOrDescriptor.id;
+    const dict = lang === 'en' ? enMessages : frMessages;
+    const rawText =
+      dict[key] ??
+      (typeof keyOrDescriptor === 'object' ? keyOrDescriptor.defaultMessage : undefined) ??
+      frMessages[key] ??
+      key;
+
+    if (!values || Object.keys(values).length === 0) {
+      return rawText;
+    }
+
+    const hasReactNode = Object.values(values).some(
+      (v) => typeof v !== 'string' && typeof v !== 'number'
+    );
+
+    if (!hasReactNode) {
+      return rawText.replace(/\{(\w+)\}/g, (_, placeholder) =>
+        placeholder in values ? String(values[placeholder]) : `{${placeholder}}`
+      );
+    }
+
+    const parts = rawText.split(/\{(\w+)\}/g);
+    return parts.map((part, index) => {
+      if (index % 2 === 1 && part in values) {
+        return <Fragment key={index}>{values[part]}</Fragment>;
+      }
+      return part;
+    });
+  };
+
   const location = useLocation();
   const siteConfig = getSiteConfig?.() ?? { siteName: 'Calcul Québec' };
   const siteName = siteConfig.siteName || 'Calcul Québec';
@@ -85,7 +148,7 @@ const ANSPage = () => {
       e.preventDefault();
     }
     if (!accepted) {
-      setValidationError(formatMessage(messages['ans.accept.error.required']));
+      setValidationError(formatMessage('ans.accept.error.required'));
       return;
     }
     setValidationError(null);
@@ -122,11 +185,11 @@ const ANSPage = () => {
         const data = await response.json().catch(() => ({}));
         window.location.href = data.redirect_url || targetNext;
       } else {
-        setError(formatMessage(messages['ans.accept.error.general']));
+        setError(formatMessage('ans.accept.error.general'));
         setSubmitting(false);
       }
     } catch (err) {
-      setError(formatMessage(messages['ans.accept.error.general']));
+      setError(formatMessage('ans.accept.error.general'));
       setSubmitting(false);
     }
   };
@@ -135,23 +198,23 @@ const ANSPage = () => {
     <main className="ans-page" id="top">
       <Helmet>
         <title>
-          {formatMessage(messages['ans.page.title'], { siteName })}
+          {formatMessage('ans.page.title', { siteName })}
         </title>
       </Helmet>
       <Container className="ans-page-wrapper">
         <header className="ans-header-card">
           <span className="ans-header-badge">
-            {formatMessage(messages['ans.header.badge'])}
+            {formatMessage('ans.header.badge')}
           </span>
           <h1 className="ans-title">
-            {formatMessage(messages['ans.heading'])}
+            {formatMessage('ans.heading')}
           </h1>
           <div className="ans-subtitle">
-            {formatMessage(messages['ans.subheading'])}
+            {formatMessage('ans.subheading')}
           </div>
           <div className="ans-meta-info">
             <span className="ans-version-badge">
-              {formatMessage(messages['ans.version'])}
+              {formatMessage('ans.version')}
             </span>
           </div>
         </header>
@@ -162,45 +225,45 @@ const ANSPage = () => {
               <span className="ans-acceptance-banner-icon" aria-hidden="true">⚠️</span>
               <div className="ans-acceptance-banner-text-group">
                 <strong className="ans-acceptance-banner-title">
-                  {formatMessage(messages['ans.accept.banner.title'])}
+                  {formatMessage('ans.accept.banner.title')}
                 </strong>
                 <p className="ans-acceptance-banner-text">
-                  {formatMessage(messages['ans.accept.banner.text'])}
+                  {formatMessage('ans.accept.banner.text')}
                 </p>
               </div>
             </div>
             <a href="#accept-sla" className="ans-acceptance-banner-btn">
-              {formatMessage(messages['ans.accept.banner.button'])}
+              {formatMessage('ans.accept.banner.button')}
             </a>
           </div>
         )}
 
-        <nav className="ans-toc-card" aria-label={formatMessage(messages['ans.toc.title'])}>
+        <nav className="ans-toc-card" aria-label={formatMessage('ans.toc.title')}>
           <h2 className="ans-toc-title">
-            {formatMessage(messages['ans.toc.title'])}
+            {formatMessage('ans.toc.title')}
           </h2>
           <ul className="ans-toc-list">
             <li>
-              <a href="#section-1">{formatMessage(messages['ans.toc.item1'])}</a>
+              <a href="#section-1">{formatMessage('ans.toc.item1')}</a>
             </li>
             <li>
-              <a href="#section-2">{formatMessage(messages['ans.toc.item2'])}</a>
+              <a href="#section-2">{formatMessage('ans.toc.item2')}</a>
             </li>
             <li>
-              <a href="#section-3">{formatMessage(messages['ans.toc.item3'])}</a>
+              <a href="#section-3">{formatMessage('ans.toc.item3')}</a>
             </li>
             <li>
-              <a href="#section-4">{formatMessage(messages['ans.toc.item4'])}</a>
+              <a href="#section-4">{formatMessage('ans.toc.item4')}</a>
             </li>
             <li>
-              <a href="#section-5">{formatMessage(messages['ans.toc.item5'])}</a>
+              <a href="#section-5">{formatMessage('ans.toc.item5')}</a>
             </li>
             <li>
-              <a href="#section-6">{formatMessage(messages['ans.toc.item6'])}</a>
+              <a href="#section-6">{formatMessage('ans.toc.item6')}</a>
             </li>
             {isLoggedIn && (
               <li>
-                <a href="#accept-sla">{formatMessage(messages['ans.toc.item7'])}</a>
+                <a href="#accept-sla">{formatMessage('ans.toc.item7')}</a>
               </li>
             )}
           </ul>
@@ -210,13 +273,13 @@ const ANSPage = () => {
           {/* Section 1: Introduction */}
           <section id="section-1" className="ans-section">
             <h2 className="ans-section-heading">
-              {formatMessage(messages['ans.section1.title'])}
+              {formatMessage('ans.section1.title')}
             </h2>
             <p>
-              {formatMessage(messages['ans.section1.p1'])}
+              {formatMessage('ans.section1.p1')}
             </p>
             <div className="ans-footnote">
-              {formatMessage(messages['ans.section1.footnote'], {
+              {formatMessage('ans.section1.footnote', {
                 url: (
                   <a
                     href="https://www.calculquebec.ca/conditions-utilisation"
@@ -233,23 +296,23 @@ const ANSPage = () => {
           {/* Section 2: Définitions */}
           <section id="section-2" className="ans-section">
             <h2 className="ans-section-heading">
-              {formatMessage(messages['ans.section2.title'])}
+              {formatMessage('ans.section2.title')}
             </h2>
             <p>
-              {formatMessage(messages['ans.section2.p1'], {
+              {formatMessage('ans.section2.p1', {
                 glossaryLink: (
                   <a
                     href="https://www.calculquebec.ca/glossaire-de-la-securite-de-information-CQ"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {formatMessage(messages['ans.section2.glossaryLinkText'])}
+                    {formatMessage('ans.section2.glossaryLinkText')}
                   </a>
                 ),
               })}
             </p>
             <div className="ans-footnote">
-              {formatMessage(messages['ans.section2.footnote'], {
+              {formatMessage('ans.section2.footnote', {
                 url: (
                   <a
                     href="https://www.calculquebec.ca/glossaire-de-la-securite-de-information-CQ"
@@ -266,67 +329,67 @@ const ANSPage = () => {
           {/* Section 3: Conditions d'utilisation spécifiques à Evolo */}
           <section id="section-3" className="ans-section">
             <h2 className="ans-section-heading">
-              {formatMessage(messages['ans.section3.title'])}
+              {formatMessage('ans.section3.title')}
             </h2>
             <p>
-              {formatMessage(messages['ans.section3.p1'])}
+              {formatMessage('ans.section3.p1')}
             </p>
             <p>
-              {formatMessage(messages['ans.section3.p2'])}
+              {formatMessage('ans.section3.p2')}
             </p>
             <p>
-              {formatMessage(messages['ans.section3.p3'])}
+              {formatMessage('ans.section3.p3')}
             </p>
             <p>
-              {formatMessage(messages['ans.section3.p4'])}
+              {formatMessage('ans.section3.p4')}
             </p>
             <p>
-              {formatMessage(messages['ans.section3.p5'])}
+              {formatMessage('ans.section3.p5')}
             </p>
             <p>
-              {formatMessage(messages['ans.section3.p6'])}
+              {formatMessage('ans.section3.p6')}
             </p>
           </section>
 
           {/* Section 4: Niveau de service - Evolo */}
           <section id="section-4" className="ans-section">
             <h2 className="ans-section-heading">
-              {formatMessage(messages['ans.section4.title'])}
+              {formatMessage('ans.section4.title')}
             </h2>
             <div className="ans-beta-notice">
               <span className="ans-beta-badge">
-                {formatMessage(messages['ans.section4.betaTag'])}
+                {formatMessage('ans.section4.betaTag')}
               </span>
               <p>
-                {formatMessage(messages['ans.section4.p1'])}
+                {formatMessage('ans.section4.p1')}
               </p>
             </div>
             <p>
-              {formatMessage(messages['ans.section4.intro'])}
+              {formatMessage('ans.section4.intro')}
             </p>
             <ul className="ans-feature-list">
-              <li>{formatMessage(messages['ans.section4.feature1'])}</li>
-              <li>{formatMessage(messages['ans.section4.feature2'])}</li>
-              <li>{formatMessage(messages['ans.section4.feature3'])}</li>
-              <li>{formatMessage(messages['ans.section4.feature4'])}</li>
-              <li>{formatMessage(messages['ans.section4.feature5'])}</li>
-              <li>{formatMessage(messages['ans.section4.feature6'])}</li>
+              <li>{formatMessage('ans.section4.feature1')}</li>
+              <li>{formatMessage('ans.section4.feature2')}</li>
+              <li>{formatMessage('ans.section4.feature3')}</li>
+              <li>{formatMessage('ans.section4.feature4')}</li>
+              <li>{formatMessage('ans.section4.feature5')}</li>
+              <li>{formatMessage('ans.section4.feature6')}</li>
             </ul>
             <p>
-              {formatMessage(messages['ans.section4.access'], {
+              {formatMessage('ans.section4.access', {
                 siteLink: (
                   <a
                     href="https://evolo.calculquebec.cloud"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {formatMessage(messages['ans.section4.siteLinkText'])}
+                    {formatMessage('ans.section4.siteLinkText')}
                   </a>
                 ),
               })}
             </p>
             <div className="ans-footnote">
-              {formatMessage(messages['ans.section4.footnote'], {
+              {formatMessage('ans.section4.footnote', {
                 url: (
                   <a
                     href="https://evolo.calculquebec.cloud"
@@ -343,20 +406,20 @@ const ANSPage = () => {
           {/* Section 5: Propriété intellectuelle */}
           <section id="section-5" className="ans-section">
             <h2 className="ans-section-heading">
-              {formatMessage(messages['ans.section5.title'])}
+              {formatMessage('ans.section5.title')}
             </h2>
             <p>
-              {formatMessage(messages['ans.section5.p1'])}
+              {formatMessage('ans.section5.p1')}
             </p>
           </section>
 
           {/* Section 6: Dispositions finales */}
           <section id="section-6" className="ans-section">
             <h2 className="ans-section-heading">
-              {formatMessage(messages['ans.section6.title'])}
+              {formatMessage('ans.section6.title')}
             </h2>
             <p>
-              {formatMessage(messages['ans.section6.p1'])}
+              {formatMessage('ans.section6.p1')}
             </p>
           </section>
 
@@ -365,15 +428,15 @@ const ANSPage = () => {
             <section id="accept-sla" className="ans-section ans-acceptance-section">
               <div className="ans-acceptance-card">
                 <h2 className="ans-acceptance-title">
-                  {formatMessage(messages['ans.accept.card.title'])}
+                  {formatMessage('ans.accept.card.title')}
                 </h2>
                 <p className="ans-acceptance-text">
-                  {formatMessage(messages['ans.accept.card.text'])}
+                  {formatMessage('ans.accept.card.text')}
                 </p>
 
                 {hasAcceptedAlready && (
                   <Alert variant="success" className="ans-acceptance-status-alert">
-                    {formatMessage(messages['ans.accept.status.alreadyAccepted'])}
+                    {formatMessage('ans.accept.status.alreadyAccepted')}
                   </Alert>
                 )}
 
@@ -389,51 +452,51 @@ const ANSPage = () => {
                   </Alert>
                 )}
 
-		{hasAcceptedAlready || (
-                <form onSubmit={handleSubmit} className="ans-acceptance-form">
-                  <label className="ans-acceptance-checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={accepted}
-                      onChange={(e) => {
-                        setAccepted(e.target.checked);
-                        if (e.target.checked) {
-                          setValidationError(null);
-                        }
-                      }}
-                      disabled={submitting}
-                      className="ans-acceptance-checkbox"
-                    />
-                    <span className="ans-acceptance-checkbox-text">
-                      {formatMessage(messages['ans.accept.checkbox.label'])}
-                    </span>
-                  </label>
+                {hasAcceptedAlready || (
+                  <form onSubmit={handleSubmit} className="ans-acceptance-form">
+                    <label className="ans-acceptance-checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={accepted}
+                        onChange={(e) => {
+                          setAccepted(e.target.checked);
+                          if (e.target.checked) {
+                            setValidationError(null);
+                          }
+                        }}
+                        disabled={submitting}
+                        className="ans-acceptance-checkbox"
+                      />
+                      <span className="ans-acceptance-checkbox-text">
+                        {formatMessage('ans.accept.checkbox.label')}
+                      </span>
+                    </label>
 
-                  <div className="ans-acceptance-actions">
-                    <Button
-                      variant="primary"
-                      type="submit"
-                      disabled={submitting}
-                      className="ans-acceptance-submit-btn"
-                    >
-                      {submitting ? (
-                        <>
-                          <Spinner
-                            animation="border"
-                            size="sm"
-                            className="mr-2"
-                            role="status"
-                            aria-hidden="true"
-                          />
-                          {formatMessage(messages['ans.accept.button.submitting'])}
-                        </>
-                      ) : (
-                        formatMessage(messages['ans.accept.button.submit'])
-                      )}
-                    </Button>
-                  </div>
-                </form>
-		)}
+                    <div className="ans-acceptance-actions">
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        disabled={submitting}
+                        className="ans-acceptance-submit-btn"
+                      >
+                        {submitting ? (
+                          <>
+                            <Spinner
+                              animation="border"
+                              size="sm"
+                              className="mr-2"
+                              role="status"
+                              aria-hidden="true"
+                            />
+                            {formatMessage('ans.accept.button.submitting')}
+                          </>
+                        ) : (
+                          formatMessage('ans.accept.button.submit')
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                )}
               </div>
             </section>
           )}
@@ -441,10 +504,10 @@ const ANSPage = () => {
 
         <footer className="ans-footer">
           <div className="ans-footer-meta">
-            <span>{formatMessage(messages['ans.footer.meta'])}</span>
+            <span>{formatMessage('ans.footer.meta')}</span>
           </div>
           <a href="#top" className="ans-back-to-top">
-            ↑ {formatMessage(messages['ans.footer.backToTop'])}
+            ↑ {formatMessage('ans.footer.backToTop')}
           </a>
         </footer>
       </Container>
