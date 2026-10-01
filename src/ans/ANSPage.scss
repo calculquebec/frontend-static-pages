@@ -4,10 +4,11 @@
   scroll-behavior: smooth;
 
   .ans-evolo-name {
-    font-family: 'Gayathri', sans-serif;
-    text-transform: lowercase;
-    font-weight: 700;
     display: inline;
+    font-family: Gayathri, sans-serif !important;
+    font-weight: 1000;
+    font-size: larger;
+    text-transform: lowercase;
   }
 
   .ans-page-wrapper {
