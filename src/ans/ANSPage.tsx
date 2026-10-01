@@ -52,11 +52,18 @@ const getNextParam = (locSearch?: string): string => {
 };
 
 const ANSPage = () => {
-  const [lang, setLang] = useState<'en' | 'fr'>(getLanguage);
+  let location: any;
+  try {
+    location = useLocation();
+  } catch (e) {
+    location = undefined;
+  }
+
+  const [lang, setLang] = useState<'en' | 'fr'>(() => getLanguage(location?.pathname));
 
   useEffect(() => {
-    setLang(getLanguage());
-  }, []);
+    setLang(getLanguage(location?.pathname));
+  }, [location?.pathname]);
 
   const formatMessage = (
     keyOrDescriptor: MessageKey | string | { id: string; defaultMessage?: string },
@@ -64,14 +71,43 @@ const ANSPage = () => {
   ): any => {
     const key = typeof keyOrDescriptor === 'string' ? keyOrDescriptor : keyOrDescriptor.id;
     const dict = lang === 'en' ? enMessages : frMessages;
+
+    // Document title must remain a clean string for Helmet
+    if (key === 'ans.page.title') {
+      const titleText = dict[key] ?? frMessages[key] ?? key;
+      return titleText
+        .replace(/\{siteName\}/g, values?.siteName ? String(values.siteName) : '')
+        .replace(/evolo/gi, 'evolo');
+    }
+
     const rawText =
       dict[key] ??
       (typeof keyOrDescriptor === 'object' ? keyOrDescriptor.defaultMessage : undefined) ??
       frMessages[key] ??
       key;
 
+    const parseTagsAndEvolo = (str: string, baseKey: string | number) => {
+      const parts = str.split(/(<\w+>.*?<\/\w+>|\bevolo\b)/gi);
+      return parts.map((part, idx) => {
+        if (/^evolo$/i.test(part)) {
+          return (
+            <span key={`${baseKey}-evolo-${idx}`} className="ans-evolo-name">
+              evolo
+            </span>
+          );
+        }
+        const match = part.match(/^<(\w+)>(.*?)<\/\1>$/);
+        if (match) {
+          const [, tag, content] = match;
+          if (tag === 'strong') return <strong key={`${baseKey}-s-${idx}`}>{content}</strong>;
+          if (tag === 'em') return <em key={`${baseKey}-e-${idx}`}>{content}</em>;
+        }
+        return part;
+      });
+    };
+
     if (!values || Object.keys(values).length === 0) {
-      return rawText;
+      return parseTagsAndEvolo(rawText, 'raw');
     }
 
     const hasReactNode = Object.values(values).some(
@@ -79,9 +115,10 @@ const ANSPage = () => {
     );
 
     if (!hasReactNode) {
-      return rawText.replace(/\{(\w+)\}/g, (_, placeholder) =>
+      const substituted = rawText.replace(/\{(\w+)\}/g, (_, placeholder) =>
         placeholder in values ? String(values[placeholder]) : `{${placeholder}}`
       );
+      return parseTagsAndEvolo(substituted, 'sub');
     }
 
     const parts = rawText.split(/\{(\w+)\}/g);
@@ -89,11 +126,10 @@ const ANSPage = () => {
       if (index % 2 === 1 && part in values) {
         return <Fragment key={index}>{values[part]}</Fragment>;
       }
-      return part;
+      return parseTagsAndEvolo(part, index);
     });
   };
 
-  const location = useLocation();
   const siteConfig = getSiteConfig?.() ?? { siteName: 'Calcul Québec' };
   const siteName = siteConfig.siteName || 'Calcul Québec';
 

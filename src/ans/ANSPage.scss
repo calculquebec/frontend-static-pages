@@ -1,5 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Gayathri:wght@100;400;700&display=swap');
+
 .ans-page {
   scroll-behavior: smooth;
+
+  .ans-evolo-name {
+    font-family: 'Gayathri', sans-serif;
+    text-transform: lowercase;
+    font-weight: 700;
+    display: inline;
+  }
 
   .ans-page-wrapper {
     max-width: 960px;
@@ -28,6 +37,14 @@
       border-radius: 20px;
       margin-bottom: 1rem;
       backdrop-filter: blur(4px);
+
+      .ans-evolo-name {
+        font-family: 'Gayathri', sans-serif;
+        font-weight: 700;
+        text-transform: lowercase;
+        letter-spacing: 0.04em;
+        font-size: 1.05em;
+      }
     }
 
     .ans-title {
@@ -40,9 +57,12 @@
 
     .ans-subtitle {
       color: rgba(255, 255, 255, 0.9);
-      font-size: 1.4rem;
-      font-weight: 400;
+      font-size: 1.6rem;
+      font-weight: 700;
+      font-family: 'Gayathri', sans-serif;
+      text-transform: lowercase;
       margin: 0 0 1rem 0;
+      letter-spacing: 0.03em;
     }
 
     .ans-meta-info {
