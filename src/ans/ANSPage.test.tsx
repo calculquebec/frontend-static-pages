@@ -21,7 +21,7 @@ describe('ANSPage', () => {
     expect(screen.getByText(/1 – Introduction/i)).toBeInTheDocument();
     expect(screen.getByText(/2 – Définitions/i)).toBeInTheDocument();
     expect(screen.getByText(/3 – Conditions.*spécifiques à evolo/i)).toBeInTheDocument();
-    expect(screen.getByText(/4 – Niveau de service - evolo/i)).toBeInTheDocument();
+    expect(screen.getByText(/4 – Niveau de service evolo/i)).toBeInTheDocument();
     expect(screen.getByText(/5 – Propriété intellectuelle/i)).toBeInTheDocument();
     expect(screen.getByText(/6 – Dispositions finales/i)).toBeInTheDocument();
 

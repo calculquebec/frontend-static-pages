@@ -133,6 +133,16 @@ const ANSPage = () => {
   const siteConfig = getSiteConfig?.() ?? { siteName: 'Calcul Québec' };
   const siteName = siteConfig.siteName || 'Calcul Québec';
 
+  const termsUrl =
+    lang === 'en'
+      ? 'https://www.calculquebec.ca/terms-use'
+      : 'https://www.calculquebec.ca/conditions-utilisation';
+
+  const glossaryUrl =
+    lang === 'en'
+      ? 'https://www.calculquebec.ca/information-security-glossary'
+      : 'https://www.calculquebec.ca/glossaire-de-la-securite-de-information-CQ';
+
   const nextUrl = getNextParam(location?.search);
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(Boolean(nextUrl));
@@ -318,11 +328,11 @@ const ANSPage = () => {
               {formatMessage('ans.section1.footnote', {
                 url: (
                   <a
-                    href="https://www.calculquebec.ca/conditions-utilisation"
+                    href={termsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    https://www.calculquebec.ca/conditions-utilisation
+                    {termsUrl}
                   </a>
                 ),
               })}
@@ -338,7 +348,7 @@ const ANSPage = () => {
               {formatMessage('ans.section2.p1', {
                 glossaryLink: (
                   <a
-                    href="https://www.calculquebec.ca/glossaire-de-la-securite-de-information-CQ"
+                    href={glossaryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -351,11 +361,11 @@ const ANSPage = () => {
               {formatMessage('ans.section2.footnote', {
                 url: (
                   <a
-                    href="https://www.calculquebec.ca/glossaire-de-la-securite-de-information-CQ"
+                    href={glossaryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    https://www.calculquebec.ca/glossaire-de-la-securite-de-information-CQ
+                    {glossaryUrl}
                   </a>
                 ),
               })}
@@ -381,9 +391,6 @@ const ANSPage = () => {
             </p>
             <p>
               {formatMessage('ans.section3.p5')}
-            </p>
-            <p>
-              {formatMessage('ans.section3.p6')}
             </p>
           </section>
 
